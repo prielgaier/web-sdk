@@ -40,9 +40,25 @@ export function createEventEmitter<TEmitterEvent extends EmitterEventBase>() {
 
 	const broadcastAsync = (emitterEvent: TEmitterEvent) => {
 		const getPromises = () =>
-			Array.from(subscriptions).map((emitterEventHandler) => emitterEventHandler(emitterEvent));
+			Array.from(subscriptions)
+				.map((emitterEventHandler) => {
+					try {
+						const result = emitterEventHandler(emitterEvent);
+						// Ensure we always return a promise
+						return result instanceof Promise ? result : Promise.resolve(result);
+					} catch (error) {
+						console.error(`Error in event handler for ${emitterEvent.type}:`, error);
+						return Promise.resolve(); // Resolve even on error to prevent hanging
+					}
+				})
+				.filter(Boolean); // Filter out any null/undefined
 
-		return Promise.all(getPromises());
+		const promises = getPromises();
+		// If no listeners, resolve immediately
+		if (promises.length === 0) {
+			return Promise.resolve();
+		}
+		return Promise.all(promises);
 	};
 
 	const eventEmitter = {

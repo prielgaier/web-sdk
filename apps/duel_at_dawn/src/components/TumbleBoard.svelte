@@ -82,12 +82,45 @@
 			context.stateGame.tumbleBoardBase = [];
 		},
 		tumbleBoardExplode: async ({ explodingPositions }) => {
+			// Track invalid positions for grouped warning
+			let invalidCount = 0;
 			const getPromises = () =>
-				explodingPositions.map(async (position) => {
-					const tumbleSymbol = context.stateGame.tumbleBoardBase[position.reel][position.row];
-					tumbleSymbol.symbolState = 'explosion';
-					await waitForResolve((resolve) => (tumbleSymbol.oncomplete = resolve));
-				});
+				explodingPositions
+					.filter((position) => {
+						// Validate position is within bounds
+						if (
+							position.reel < 0 ||
+							position.reel >= context.stateGame.tumbleBoardBase.length
+						) {
+							invalidCount++;
+							return false;
+						}
+						const tumbleReel = context.stateGame.tumbleBoardBase[position.reel];
+						if (!tumbleReel) {
+							invalidCount++;
+							return false;
+						}
+						if (position.row < 0 || position.row >= tumbleReel.length) {
+							invalidCount++;
+							return false;
+						}
+						return true;
+					})
+					.map(async (position) => {
+						const tumbleSymbol = context.stateGame.tumbleBoardBase[position.reel][position.row];
+						tumbleSymbol.symbolState = 'explosion';
+						// Add timeout to prevent hanging if animation doesn't complete
+						await Promise.race([
+							waitForResolve((resolve) => (tumbleSymbol.oncomplete = resolve)),
+							new Promise((resolve) => setTimeout(resolve, 3000)), // 3 second timeout
+						]);
+					});
+
+			if (invalidCount > 0) {
+				console.warn(
+					`tumbleBoardExplode: Filtered ${invalidCount} invalid position(s) (positions were already filtered in handler, but some may still be invalid for actual tumble board state)`,
+				);
+			}
 
 			await Promise.all(getPromises());
 		},
@@ -115,12 +148,16 @@
 								if (symbolIndex > 0 && symbolIndex < tumbleReel.length - 1) {
 									tumbleSymbol.symbolState = 'land';
 									context.stateGameDerived.onSymbolLand({ rawSymbol: tumbleSymbol.rawSymbol });
-									await waitForResolve((resolve) => {
-										tumbleSymbol.oncomplete = () => {
-											tumbleSymbol.symbolState = 'static';
-											resolve();
-										};
-									});
+									// Add timeout to prevent hanging if callback is never called
+									await Promise.race([
+										waitForResolve((resolve) => {
+											tumbleSymbol.oncomplete = () => {
+												tumbleSymbol.symbolState = 'static';
+												resolve();
+											};
+										}),
+										new Promise((resolve) => setTimeout(resolve, 3000)), // 3 second timeout
+									]);
 								}
 							}
 						});

@@ -71,8 +71,11 @@ export function createEnhanceBoardSpin<TReel extends Reel<any, any>>({
 				onSpinFinishing: () => {
 					reel.onReelStopping();
 					const nextReelIndex = reelIndex + 1;
-					const isNextReelAnticipated = (revealEvent.anticipation?.[nextReelIndex] || 0) > 0;
-					if (isNextReelAnticipated) board[nextReelIndex].reelState.anticipating = true;
+					// Check if next reel exists before accessing it
+					if (nextReelIndex < board.length) {
+						const isNextReelAnticipated = (revealEvent.anticipation?.[nextReelIndex] || 0) > 0;
+						if (isNextReelAnticipated) board[nextReelIndex].reelState.anticipating = true;
+					}
 				},
 			});
 

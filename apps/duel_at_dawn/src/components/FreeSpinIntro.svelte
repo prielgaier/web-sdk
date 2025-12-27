@@ -34,7 +34,11 @@
 			// }
 			// freeSpinsFromEvent = emitterEvent.extraSpins ?? emitterEvent.totalFreeSpins;
 			freeSpinsFromEvent = emitterEvent.totalFreeSpins;
-			await waitForResolve((resolve) => (oncomplete = resolve));
+			// Add timeout to prevent hanging if user doesn't press button
+			await Promise.race([
+				waitForResolve((resolve) => (oncomplete = resolve)),
+				new Promise((resolve) => setTimeout(resolve, 5000)), // Auto-advance after 5 seconds
+			]);
 		},
 	});
 </script>

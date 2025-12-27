@@ -31,12 +31,37 @@
 		boardHide: () => (show = false),
 		boardWithAnimateSymbols: async ({ symbolPositions }) => {
 			const getPromises = () =>
-				symbolPositions.map(async (position) => {
-					const reelSymbol = context.stateGame.board[position.reel].reelState.symbols[position.row];
-					reelSymbol.symbolState = 'win';
-					await waitForResolve((resolve) => (reelSymbol.oncomplete = resolve));
-					reelSymbol.symbolState = 'postWinStatic';
-				});
+				symbolPositions
+					.filter((position) => {
+						// Validate position is within bounds
+						if (position.reel < 0 || position.reel >= context.stateGame.board.length) {
+							console.warn(`Invalid reel index: ${position.reel}`);
+							return false;
+						}
+						const reel = context.stateGame.board[position.reel];
+						if (!reel || !reel.reelState) {
+							console.warn(`Reel or reelState is undefined at reel ${position.reel}`);
+							return false;
+						}
+						const symbols = reel.reelState.symbols;
+						if (!symbols || position.row < 0 || position.row >= symbols.length) {
+							console.warn(
+								`Invalid row index: ${position.row} (reel ${position.reel} has ${symbols?.length || 0} symbols)`,
+							);
+							return false;
+						}
+						return true;
+					})
+					.map(async (position) => {
+						const reelSymbol = context.stateGame.board[position.reel].reelState.symbols[position.row];
+						reelSymbol.symbolState = 'win';
+						// Add timeout to prevent hanging if animation doesn't complete
+						await Promise.race([
+							waitForResolve((resolve) => (reelSymbol.oncomplete = resolve)),
+							new Promise((resolve) => setTimeout(resolve, 3000)), // 3 second timeout
+						]);
+						reelSymbol.symbolState = 'postWinStatic';
+					});
 
 			await Promise.all(getPromises());
 		},

@@ -1,5 +1,8 @@
 {
 	"extends": "config-ts/base.json",
+	"compilerOptions": {
+		"noEmit": true
+	},
 	"include": ["."],
-	"exclude": ["dist", "build", "node_modules"]
+	"exclude": ["dist", "build", "node_modules", "svelte.config.js", "vite.config.js"]
 }

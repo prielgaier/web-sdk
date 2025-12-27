@@ -6,7 +6,7 @@ export const SYMBOL_SIZE = 80;
 
 export const REEL_PADDING = 0.53;
 
-// initial board (padded top and bottom)
+// initial board (padded top and bottom) - 5x5 grid (5 reels, 5 rows visible + 2 padding = 7 total)
 export const INITIAL_BOARD: RawSymbol[][] = [
 	[
 		{
@@ -28,12 +28,6 @@ export const INITIAL_BOARD: RawSymbol[][] = [
 			name: 'L3',
 		},
 		{
-			name: 'L2',
-		},
-		{
-			name: 'L3',
-		},
-		{
 			name: 'H3',
 		},
 	],
@@ -48,16 +42,10 @@ export const INITIAL_BOARD: RawSymbol[][] = [
 			name: 'L3',
 		},
 		{
-			name: 'L2',
+			name: 'H2',
 		},
 		{
-			name: 'L2',
-		},
-		{
-			name: 'L3',
-		},
-		{
-			name: 'L2',
+			name: 'H2',
 		},
 		{
 			name: 'L2',
@@ -77,19 +65,13 @@ export const INITIAL_BOARD: RawSymbol[][] = [
 			name: 'L1',
 		},
 		{
-			name: 'L1',
-		},
-		{
-			name: 'H4',
-		},
-		{
-			name: 'L2',
-		},
-		{
 			name: 'H4',
 		},
 		{
 			name: 'H4',
+		},
+		{
+			name: 'H2',
 		},
 		{
 			name: 'H2',
@@ -109,19 +91,13 @@ export const INITIAL_BOARD: RawSymbol[][] = [
 			name: 'H2',
 		},
 		{
-			name: 'H4',
-		},
-		{
-			name: 'H2',
-		},
-		{
-			name: 'H2',
-		},
-		{
 			name: 'L3',
 		},
 		{
 			name: 'L3',
+		},
+		{
+			name: 'H3',
 		},
 	],
 	[
@@ -129,7 +105,7 @@ export const INITIAL_BOARD: RawSymbol[][] = [
 			name: 'L1',
 		},
 		{
-			name: 'L1',
+			name: 'H1',
 		},
 		{
 			name: 'H3',
@@ -138,74 +114,10 @@ export const INITIAL_BOARD: RawSymbol[][] = [
 			name: 'H1',
 		},
 		{
-			name: 'H1',
-		},
-		{
-			name: 'L2',
-		},
-		{
-			name: 'L2',
-		},
-		{
-			name: 'L3',
-		},
-		{
-			name: 'L3',
-		},
-	],
-	[
-		{
-			name: 'L1',
-		},
-		{
-			name: 'L2',
-		},
-		{
-			name: 'L2',
-		},
-		{
-			name: 'H1',
-		},
-		{
-			name: 'H4',
-		},
-		{
-			name: 'H4',
-		},
-		{
 			name: 'H2',
 		},
 		{
-			name: 'H3',
-		},
-		{
-			name: 'H2',
-		},
-	],
-	[
-		{
 			name: 'L3',
-		},
-		{
-			name: 'L3',
-		},
-		{
-			name: 'L3',
-		},
-		{
-			name: 'H3',
-		},
-		{
-			name: 'H1',
-		},
-		{
-			name: 'L3',
-		},
-		{
-			name: 'H3',
-		},
-		{
-			name: 'H3',
 		},
 		{
 			name: 'H2',

@@ -322,69 +322,23 @@ export default {
 					name: 'L3',
 				},
 			],
-			[
-				{
-					name: 'H3',
-				},
-				{
-					name: 'H4',
-				},
-				{
-					name: 'H2',
-				},
-				{
-					name: 'H3',
-				},
-			],
-			[
-				{
-					name: 'L1',
-				},
-				{
-					name: 'L3',
-				},
-			],
 		],
 		explodingSymbols: [
 			{
 				reel: 3,
-				row: 5,
-			},
-			{
-				reel: 4,
-				row: 6,
-			},
-			{
-				reel: 4,
-				row: 5,
-			},
-			{
-				reel: 4,
 				row: 4,
 			},
 			{
-				reel: 5,
-				row: 6,
-			},
-			{
-				reel: 5,
-				row: 5,
-			},
-			{
-				reel: 5,
-				row: 4,
-			},
-			{
-				reel: 5,
+				reel: 4,
 				row: 3,
 			},
 			{
-				reel: 6,
-				row: 6,
+				reel: 4,
+				row: 2,
 			},
 			{
-				reel: 6,
-				row: 5,
+				reel: 4,
+				row: 1,
 			},
 		],
 	},
@@ -406,16 +360,16 @@ export default {
 				row: 1,
 			},
 			{
+				reel: 2,
+				row: 3,
+			},
+			{
+				reel: 3,
+				row: 4,
+			},
+			{
 				reel: 4,
 				row: 1,
-			},
-			{
-				reel: 5,
-				row: 4,
-			},
-			{
-				reel: 6,
-				row: 4,
 			},
 		],
 	},
@@ -455,10 +409,10 @@ export default {
 			},
 			{
 				reel: 3,
-				row: 6,
+				row: 4,
 			},
 			{
-				reel: 6,
+				reel: 4,
 				row: 3,
 			},
 		],

@@ -56,9 +56,29 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		eventEmitter.broadcast({ type: 'soundScatterCounterClear' });
 	},
 	winInfo: async (bookEvent: BookEventOfType<'winInfo'>) => {
+		// Filter invalid positions (board is 5x5, reels 0-4)
+		const allPositions = _.flatten(bookEvent.wins.map((win) => win.positions));
+		const invalidPositions: string[] = [];
+		const validPositions = allPositions.filter((position) => {
+			if (position.reel < 0 || position.reel >= 5) {
+				invalidPositions.push(`reel ${position.reel}`);
+				return false;
+			}
+			if (position.row < 0 || position.row >= 5) {
+				invalidPositions.push(`row ${position.row}@reel${position.reel}`);
+				return false;
+			}
+			return true;
+		});
+		if (invalidPositions.length > 0) {
+			console.warn(
+				`winInfo: Filtered ${invalidPositions.length} invalid position(s) (board is 5x5, valid: reels 0-4, rows 0-4)`,
+			);
+		}
+		
 		const promise1 = async () => {
 			eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_winlevel_small' });
-			await animateSymbols({ positions: _.flatten(bookEvent.wins.map((win) => win.positions)) });
+			await animateSymbols({ positions: validPositions });
 		};
 
 		const promise2 = async () => {
@@ -94,66 +114,157 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 	freeSpinTrigger: async (bookEvent: BookEventOfType<'freeSpinTrigger'>) => {
 		// animate scatters
 		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_scatter_win_v2' });
-		await animateSymbols({ positions: bookEvent.positions });
+		try {
+			await Promise.race([
+				animateSymbols({ positions: bookEvent.positions }),
+				new Promise((resolve) => setTimeout(resolve, 3000)), // 3 second timeout
+			]);
+		} catch (error) {
+			console.warn('Scatter animation timeout or error:', error);
+		}
 		// show free spin intro
 		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_superfreespin' });
-		await eventEmitter.broadcastAsync({ type: 'uiHide' });
-		await eventEmitter.broadcastAsync({ type: 'transition' });
+		try {
+			await Promise.race([
+				eventEmitter.broadcastAsync({ type: 'uiHide' }),
+				new Promise((resolve) => setTimeout(resolve, 1000)),
+			]);
+		} catch (error) {
+			console.warn('UI hide timeout:', error);
+		}
+		try {
+			await Promise.race([
+				eventEmitter.broadcastAsync({ type: 'transition' }),
+				new Promise((resolve) => setTimeout(resolve, 2000)),
+			]);
+		} catch (error) {
+			console.warn('Transition timeout:', error);
+		}
 		eventEmitter.broadcast({ type: 'freeSpinIntroShow' });
 		eventEmitter.broadcast({ type: 'soundOnce', name: 'jng_intro_fs' });
 		eventEmitter.broadcast({ type: 'soundMusic', name: 'bgm_freespin' });
-		await eventEmitter.broadcastAsync({
-			type: 'freeSpinIntroUpdate',
-			totalFreeSpins: bookEvent.totalFs,
-		});
+		try {
+			await Promise.race([
+				eventEmitter.broadcastAsync({
+					type: 'freeSpinIntroUpdate',
+					totalFreeSpins: bookEvent.totalFs,
+				}),
+				new Promise((resolve) => setTimeout(resolve, 2000)),
+			]);
+		} catch (error) {
+			console.warn('Free spin intro update timeout:', error);
+		}
 		stateGame.gameType = 'freegame';
 		eventEmitter.broadcast({ type: 'freeSpinIntroHide' });
 		eventEmitter.broadcast({ type: 'boardFrameGlowShow' });
 		eventEmitter.broadcast({ type: 'globalMultiplierShow' });
-		await eventEmitter.broadcastAsync({
-			type: 'globalMultiplierUpdate',
-			multiplier: 1, // resets when multiplier === 1
-		});
+		try {
+			await Promise.race([
+				eventEmitter.broadcastAsync({
+					type: 'globalMultiplierUpdate',
+					multiplier: 1, // resets when multiplier === 1
+				}),
+				new Promise((resolve) => setTimeout(resolve, 1000)),
+			]);
+		} catch (error) {
+			console.warn('Global multiplier update timeout:', error);
+		}
 		eventEmitter.broadcast({ type: 'freeSpinCounterShow' });
 		eventEmitter.broadcast({
 			type: 'freeSpinCounterUpdate',
 			current: undefined,
 			total: bookEvent.totalFs,
 		});
-		await eventEmitter.broadcastAsync({ type: 'uiShow' });
-		await eventEmitter.broadcastAsync({ type: 'drawerButtonShow' });
+		try {
+			await Promise.race([
+				eventEmitter.broadcastAsync({ type: 'uiShow' }),
+				new Promise((resolve) => setTimeout(resolve, 1000)),
+			]);
+		} catch (error) {
+			console.warn('UI show timeout:', error);
+		}
+		try {
+			await Promise.race([
+				eventEmitter.broadcastAsync({ type: 'drawerButtonShow' }),
+				new Promise((resolve) => setTimeout(resolve, 1000)),
+			]);
+		} catch (error) {
+			console.warn('Drawer button show timeout:', error);
+		}
 		eventEmitter.broadcast({ type: 'drawerFold' });
 	},
 	freeSpinRetrigger: async (bookEvent: BookEventOfType<'freeSpinTrigger'>) => {
 		// animate scatters
 		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_scatter_win_v2' });
-		await animateSymbols({ positions: bookEvent.positions });
+		try {
+			await Promise.race([
+				animateSymbols({ positions: bookEvent.positions }),
+				new Promise((resolve) => setTimeout(resolve, 3000)), // 3 second timeout
+			]);
+		} catch (error) {
+			console.warn('Scatter animation timeout or error:', error);
+		}
 		// show free spin intro
 		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_superfreespin' });
-		await eventEmitter.broadcastAsync({ type: 'uiHide' });
-		await eventEmitter.broadcastAsync({ type: 'transition' });
+		try {
+			await Promise.race([
+				eventEmitter.broadcastAsync({ type: 'uiHide' }),
+				new Promise((resolve) => setTimeout(resolve, 1000)),
+			]);
+		} catch (error) {
+			console.warn('UI hide timeout:', error);
+		}
+		try {
+			await Promise.race([
+				eventEmitter.broadcastAsync({ type: 'transition' }),
+				new Promise((resolve) => setTimeout(resolve, 2000)),
+			]);
+		} catch (error) {
+			console.warn('Transition timeout:', error);
+		}
 		eventEmitter.broadcast({ type: 'freeSpinIntroShow' });
 		eventEmitter.broadcast({ type: 'soundOnce', name: 'jng_intro_fs' });
 		eventEmitter.broadcast({ type: 'soundMusic', name: 'bgm_freespin' });
-		await eventEmitter.broadcastAsync({
-			type: 'freeSpinIntroUpdate',
-			totalFreeSpins: bookEvent.totalFs,
-		});
+		try {
+			await Promise.race([
+				eventEmitter.broadcastAsync({
+					type: 'freeSpinIntroUpdate',
+					totalFreeSpins: bookEvent.totalFs,
+				}),
+				new Promise((resolve) => setTimeout(resolve, 2000)),
+			]);
+		} catch (error) {
+			console.warn('Free spin intro update timeout:', error);
+		}
 		stateGame.gameType = 'freegame';
 		eventEmitter.broadcast({ type: 'freeSpinIntroHide' });
 		eventEmitter.broadcast({ type: 'boardFrameGlowShow' });
 		eventEmitter.broadcast({ type: 'globalMultiplierShow' });
-		await eventEmitter.broadcastAsync({
-			type: 'globalMultiplierUpdate',
-			multiplier: 1, // resets when multiplier === 1
-		});
+		try {
+			await Promise.race([
+				eventEmitter.broadcastAsync({
+					type: 'globalMultiplierUpdate',
+					multiplier: 1, // resets when multiplier === 1
+				}),
+				new Promise((resolve) => setTimeout(resolve, 1000)),
+			]);
+		} catch (error) {
+			console.warn('Global multiplier update timeout:', error);
+		}
 		eventEmitter.broadcast({ type: 'freeSpinCounterShow' });
 		eventEmitter.broadcast({
 			type: 'freeSpinCounterUpdate',
 			current: undefined,
 			total: bookEvent.totalFs,
 		});
-		await eventEmitter.broadcastAsync({ type: 'uiShow' });
+		try {
+			await Promise.race([
+				eventEmitter.broadcastAsync({ type: 'uiShow' }),
+				new Promise((resolve) => setTimeout(resolve, 1000)),
+			]);
+		} catch (error) {
+			console.warn('UI show timeout:', error);
+		}
 	},
 	updateFreeSpin: async (bookEvent: BookEventOfType<'updateFreeSpin'>) => {
 		eventEmitter.broadcast({ type: 'freeSpinCounterShow' });
@@ -203,9 +314,32 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		eventEmitter.broadcast({ type: 'tumbleBoardShow' });
 		eventEmitter.broadcast({ type: 'tumbleBoardInit', addingBoard: bookEvent.newSymbols });
 		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_multiplier_explosion_b' });
+		
+		// Filter invalid positions before passing to component
+		// Board is 5x5 (5 reels, indices 0-4)
+		const invalidPositions: string[] = [];
+		const validExplodingPositions = bookEvent.explodingSymbols.filter((position) => {
+			if (position.reel < 0 || position.reel >= 5) {
+				invalidPositions.push(`reel ${position.reel}`);
+				return false;
+			}
+			// Row validation will be done in component based on actual tumble board state
+			// But filter out obviously invalid rows (negative or very large)
+			if (position.row < 0 || position.row > 20) {
+				invalidPositions.push(`row ${position.row}@reel${position.reel}`);
+				return false;
+			}
+			return true;
+		});
+		if (invalidPositions.length > 0) {
+			console.warn(
+				`tumbleBoard: Filtered ${invalidPositions.length} invalid position(s) (board is 5x5, valid: reels 0-4)`,
+			);
+		}
+		
 		await eventEmitter.broadcastAsync({
 			type: 'tumbleBoardExplode',
-			explodingPositions: bookEvent.explodingSymbols,
+			explodingPositions: validExplodingPositions,
 		});
 		eventEmitter.broadcast({ type: 'tumbleBoardRemoveExploded' });
 		await eventEmitter.broadcastAsync({ type: 'tumbleBoardSlideDown' });
@@ -250,11 +384,18 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 			reel: bookEvent.reel,
 			multiplier: bookEvent.multiplier,
 		});
-		// Play duel animation
-		await eventEmitter.broadcastAsync({
-			type: 'vsDuelAnimate',
-			reel: bookEvent.reel,
-		});
+		// Play duel animation (with timeout to prevent hanging)
+		try {
+			await Promise.race([
+				eventEmitter.broadcastAsync({
+					type: 'vsDuelAnimate',
+					reel: bookEvent.reel,
+				}),
+				new Promise((resolve) => setTimeout(resolve, 2000)), // 2 second timeout
+			]);
+		} catch (error) {
+			console.warn('VS Duel animation timeout or error:', error);
+		}
 		// Expand reel to wilds
 		eventEmitter.broadcast({
 			type: 'vsReelExpand',
@@ -273,11 +414,18 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 			type: 'outlawReelExpand',
 			reel: bookEvent.reel,
 		});
-		// Shoot wilds animation
-		await eventEmitter.broadcastAsync({
-			type: 'outlawShootWilds',
-			shotWilds: bookEvent.shotWilds,
-		});
+		// Shoot wilds animation (with timeout to prevent hanging)
+		try {
+			await Promise.race([
+				eventEmitter.broadcastAsync({
+					type: 'outlawShootWilds',
+					shotWilds: bookEvent.shotWilds,
+				}),
+				new Promise((resolve) => setTimeout(resolve, 2000)), // 2 second timeout
+			]);
+		} catch (error) {
+			console.warn('Outlaw shoot wilds animation timeout or error:', error);
+		}
 		// Place wilds on board
 		eventEmitter.broadcast({
 			type: 'outlawWildsPlace',
