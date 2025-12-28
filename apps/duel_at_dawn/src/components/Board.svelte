@@ -65,63 +65,6 @@
 
 			await Promise.all(getPromises());
 		},
-		vsReelExpand: ({ reel, multiplier }) => {
-			// Convert all visible symbols on the reel (rows 1-5) to wilds with multiplier
-			// The board has 7 rows (0-6): row 0 = top padding, rows 1-5 = visible, row 6 = bottom padding
-			const reelSymbols = context.stateGame.board[reel]?.reelState?.symbols;
-			if (!reelSymbols) {
-				console.warn(`Invalid reel index: ${reel}`);
-				return;
-			}
-
-			// Convert visible rows (1-5) to wilds with multiplier
-			for (let row = 1; row <= 5; row++) {
-				if (row < reelSymbols.length) {
-					reelSymbols[row].rawSymbol = {
-						name: 'W',
-						multiplier: multiplier,
-					};
-				}
-			}
-		},
-		outlawReelExpand: ({ reel }) => {
-			// Convert all visible symbols on the reel (rows 1-5) to wilds
-			const reelSymbols = context.stateGame.board[reel]?.reelState?.symbols;
-			if (!reelSymbols) {
-				console.warn(`Invalid reel index: ${reel}`);
-				return;
-			}
-
-			// Convert visible rows (1-5) to wilds
-			for (let row = 1; row <= 5; row++) {
-				if (row < reelSymbols.length) {
-					reelSymbols[row].rawSymbol = {
-						name: 'W',
-					};
-				}
-			}
-		},
-		outlawWildsPlace: ({ shotWilds }) => {
-			// Place wilds at the specified positions with their multipliers
-			shotWilds.forEach(({ reel, row, multiplier }) => {
-				// Validate position (row should be 1-5 for visible rows)
-				if (reel < 0 || reel >= context.stateGame.board.length) {
-					console.warn(`Invalid reel index: ${reel}`);
-					return;
-				}
-				const reelSymbols = context.stateGame.board[reel]?.reelState?.symbols;
-				if (!reelSymbols || row < 1 || row > 5 || row >= reelSymbols.length) {
-					console.warn(`Invalid row index: ${row} for reel ${reel}`);
-					return;
-				}
-
-				// Place wild with multiplier at the position
-				reelSymbols[row].rawSymbol = {
-					name: 'W',
-					multiplier: multiplier,
-				};
-			});
-		},
 	});
 
 	context.stateGameDerived.enhancedBoard.readyToSpinEffect();

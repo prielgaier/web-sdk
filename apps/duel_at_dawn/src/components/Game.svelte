@@ -31,8 +31,6 @@
 	import FreeSpinOutro from './FreeSpinOutro.svelte';
 	import Transition from './Transition.svelte';
 	import I18nTest from './I18nTest.svelte';
-	import VsDuel from './VsDuel.svelte';
-	import OutlawFeature from './OutlawFeature.svelte';
 
 	const context = getContext();
 
@@ -83,9 +81,6 @@
 			<TumbleBoard />
 			<ClusterWinAmounts />
 		</MainContainer>
-
-		<VsDuel />
-		<OutlawFeature />
 
 		<UI>
 			{#snippet gameName()}
