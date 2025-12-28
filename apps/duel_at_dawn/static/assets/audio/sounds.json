@@ -1,7 +1,7 @@
 {
 	"sprite": {
 		"bgm_freespin": [0, 69120, true],
-		"bgm_main": [71000, 132452.83446712018, true],
+		"bgm_main": [406000, 183000.83446712018, true],
 		"bgm_winlevel_big": [205000, 8000, true],
 		"bgm_winlevel_epic": [214000, 8000, true],
 		"bgm_winlevel_max": [223000, 8000, true],
@@ -61,7 +61,7 @@
 	],
 	"config": {
 		"bgm_freespin": { "volume": 1 },
-		"bgm_main": { "volume": 1 },
+		"bgm_main": { "volume": 0.7 },
 		"bgm_winlevel_big": { "volume": 1 },
 		"bgm_winlevel_epic": { "volume": 1 },
 		"bgm_winlevel_max": { "volume": 1 },

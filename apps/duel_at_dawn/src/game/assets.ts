@@ -101,6 +101,30 @@ export default {
 			scale: 2,
 		},
 	},
+	VS: {
+		type: 'spine',
+		src: {
+			atlas: new URL('../../assets/spines/symbols2/symbols2.atlas', import.meta.url).href,
+			skeleton: new URL('../../assets/spines/symbols2/VS.json', import.meta.url).href,
+			scale: 2,
+		},
+	},
+	O: {
+		type: 'spine',
+		src: {
+			atlas: new URL('../../assets/spines/symbols2/symbols2.atlas', import.meta.url).href,
+			skeleton: new URL('../../assets/spines/symbols2/O.json', import.meta.url).href,
+			scale: 2,
+		},
+	},
+	FS: {
+		type: 'spine',
+		src: {
+			atlas: new URL('../../assets/spines/symbols2/symbols2.atlas', import.meta.url).href,
+			skeleton: new URL('../../assets/spines/symbols2/FS.json', import.meta.url).href,
+			scale: 2,
+		},
+	},
 	explosion: {
 		type: 'spine',
 		src: {

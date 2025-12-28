@@ -67,5 +67,12 @@ export const getSymbolInfo = ({
 	state: SymbolState;
 }) => {
 	const symbolKey = getSymbolKey({ rawSymbol });
-	return SYMBOL_INFO_MAP[symbolKey][state];
+	// Fall back to base symbol if multiplier variant doesn't exist
+	const symbolMap = SYMBOL_INFO_MAP[symbolKey] || SYMBOL_INFO_MAP[rawSymbol.name as keyof typeof SYMBOL_INFO_MAP];
+	if (!symbolMap) {
+		console.warn(`Symbol not found in SYMBOL_INFO_MAP: ${String(symbolKey)}, falling back to base symbol: ${rawSymbol.name}`);
+		// Fall back to W as last resort if symbol doesn't exist at all
+		return SYMBOL_INFO_MAP.W[state];
+	}
+	return symbolMap[state];
 };

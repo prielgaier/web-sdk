@@ -56,7 +56,11 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		eventEmitter.broadcast({ type: 'soundScatterCounterClear' });
 	},
 	winInfo: async (bookEvent: BookEventOfType<'winInfo'>) => {
-		// Filter invalid positions (board is 5x5, reels 0-4)
+		// Filter invalid positions
+		// With include_padding=True, reveal board has 7 rows per reel:
+		//   row 0 = top padding, rows 1-5 = visible, row 6 = bottom padding
+		// Win positions are offset by +1, so they point to rows 1-5 (visible rows)
+		// The frontend reel stores all 7 symbols (indices 0-6), so we accept rows 1-5
 		const allPositions = _.flatten(bookEvent.wins.map((win) => win.positions));
 		const invalidPositions: string[] = [];
 		const validPositions = allPositions.filter((position) => {
@@ -64,7 +68,8 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 				invalidPositions.push(`reel ${position.reel}`);
 				return false;
 			}
-			if (position.row < 0 || position.row >= 5) {
+			// Accept rows 1-5 (visible rows in 7-row reveal board with padding)
+			if (position.row < 1 || position.row > 5) {
 				invalidPositions.push(`row ${position.row}@reel${position.reel}`);
 				return false;
 			}
@@ -72,7 +77,7 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		});
 		if (invalidPositions.length > 0) {
 			console.warn(
-				`winInfo: Filtered ${invalidPositions.length} invalid position(s) (board is 5x5, valid: reels 0-4, rows 0-4)`,
+				`winInfo: Filtered ${invalidPositions.length} invalid position(s) (reveal board has 7 rows per reel: row 0=top padding, rows 1-5=visible, row 6=bottom padding. Win positions should be rows 1-5)`,
 			);
 		}
 		
@@ -84,15 +89,17 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		const promise2 = async () => {
 			await eventEmitter.broadcastAsync({
 				type: 'showClusterWinAmounts',
-				wins: bookEvent.wins.map((win) => {
-					return {
-						win: win.meta.winWithoutMult,
-						mult: win.meta.globalMult,
-						result: win.meta.winWithoutMult * win.meta.globalMult,
-						reel: win.meta.overlay.reel,
-						row: win.meta.overlay.row,
-					};
-				}),
+				wins: bookEvent.wins
+					.filter((win) => win.meta?.overlay) // Filter out wins without overlay
+					.map((win) => {
+						return {
+							win: win.meta.winWithoutMult,
+							mult: win.meta.globalMult,
+							result: win.meta.winWithoutMult * win.meta.globalMult,
+							reel: win.meta.overlay.reel,
+							row: win.meta.overlay.row,
+						};
+					}),
 			});
 		};
 

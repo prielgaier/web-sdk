@@ -4,6 +4,9 @@ import img from './symbols2.webp';
 import rawAtlas from './symbols2.atlas?raw';
 import M from './M.json';
 import S from './S.json';
+import VS from './VS.json';
+import O from './O.json';
+import FS from './FS.json';
 
 export default createAsset({
 	img,
@@ -11,5 +14,8 @@ export default createAsset({
 	spines: {
 		M,
 		S,
+		VS,
+		O,
+		FS,
 	},
 });

@@ -217,6 +217,11 @@ const l4Static = { type: 'sprite', assetKey: 'l4.webp', sizeRatios: { width: 1, 
 
 const sStatic = { type: 'sprite', assetKey: 's.png', sizeRatios: { width: 1.243, height: 1.243 } };
 const wStatic = { type: 'sprite', assetKey: 'w.png', sizeRatios: { width: 1.12, height: 1.12 } };
+// Placeholder sprites for VS, O, FS until Spine files are added
+// TODO: Replace with actual Spine animations when VS.json, O.json, FS.json are available
+const vsStatic = { type: 'sprite', assetKey: 's.png', sizeRatios: { width: 1.5, height: 1.5 } };
+const oStatic = { type: 'sprite', assetKey: 's.png', sizeRatios: { width: 1.5, height: 1.5 } };
+const fsStatic = { type: 'sprite', assetKey: 's.png', sizeRatios: { width: 1.5, height: 1.5 } };
 
 const m2Static = {
 	type: 'sprite',
@@ -387,6 +392,30 @@ export const SYMBOL_INFO_MAP = {
 			animationName: 'scatter_land',
 			sizeRatios: sSizeRatios,
 		},
+	},
+	VS: {
+		explosion,
+		postWinStatic: vsStatic,
+		static: vsStatic,
+		spin: vsStatic,
+		win: vsStatic, // TODO: Replace with Spine animation when VS.json is available
+		land: vsStatic, // TODO: Replace with Spine animation when VS.json is available
+	},
+	O: {
+		explosion,
+		postWinStatic: oStatic,
+		static: oStatic,
+		spin: oStatic,
+		win: oStatic, // TODO: Replace with Spine animation when O.json is available
+		land: oStatic, // TODO: Replace with Spine animation when O.json is available
+	},
+	FS: {
+		explosion,
+		postWinStatic: fsStatic,
+		static: fsStatic,
+		spin: fsStatic,
+		win: fsStatic, // TODO: Replace with Spine animation when FS.json is available
+		land: fsStatic, // TODO: Replace with Spine animation when FS.json is available
 	},
 } as const;
 
